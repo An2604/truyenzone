@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chi tiết truyện - TruyenZone</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo" onclick="window.location.href='index.html'">
+      <img src="image/logo.jpg" alt="logo" style="height: 26px; margin-right: 6px;" />
+      <span>TruyenZone</span>
+    </div>
+    <div class="user-actions" id="userActions"></div>
+  </header>
+
+  <main class="detail-container">
+    <div class="detail-left">
+      <img id="detailImage" src="" alt="Ảnh truyện" />
+    </div>
+    <div class="detail-right">
+      <h2 id="detailTitle" class="detail-title"></h2>
+      <p><strong>📚 Thể loại:</strong> <span id="detailGenre"></span></p>
+      <p><strong>📘 Trạng thái:</strong> <span id="detailStatus"></span></p>
+      <p><strong>🆕 Chương mới nhất:</strong> <span id="detailChapter"></span></p>
+      <button onclick="readComic()" class="read-btn">📖 Đọc ngay</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 TruyenZone. Tất cả bản quyền thuộc về bạn 😎</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    const comic = JSON.parse(localStorage.getItem("selectedComic"));
+    if (comic) {
+      document.getElementById("detailImage").src = comic.image;
+      document.getElementById("detailTitle").textContent = comic.title;
+      document.getElementById("detailGenre").textContent = comic.genre;
+      document.getElementById("detailStatus").textContent = comic.status;
+      document.getElementById("detailChapter").textContent = comic.chapter;
+    }
+
+    updateUserUI();
+
+    function readComic() {
+      window.location.href = "reader.html";
+    }
+  </script>
+</body>
+</html>

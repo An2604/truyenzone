@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đăng nhập - TruyenZone</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .form-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 300px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    .message {
+      margin-top: 10px;
+      color: red;
+    }
+    a {
+      color: #3498db;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Đăng nhập</h2>
+    <input type="text" id="loginUsername" placeholder="Tên người dùng" />
+    <input type="password" id="loginPassword" placeholder="Mật khẩu" />
+    <button onclick="login()">Đăng nhập</button>
+    <p>Bạn chưa có tài khoản? <a href="register.html">Đăng ký</a></p>
+    <p id="loginMessage" class="message"></p>
+  </div>
+
+  <script>
+    function login() {
+      const username = document.getElementById("loginUsername").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+      const message = document.getElementById("loginMessage");
+
+      if (!username || !password) {
+        message.textContent = "Vui lòng nhập đầy đủ thông tin.";
+        return;
+      }
+
+      const stored = localStorage.getItem(username);
+      if (!stored) {
+        message.textContent = "Tài khoản không tồn tại.";
+        return;
+      }
+
+      const user = JSON.parse(stored);
+      if (user.password !== password) {
+        message.textContent = "Sai mật khẩu.";
+        return;
+      }
+
+      localStorage.setItem("currentUser", username);
+      message.style.color = "green";
+      message.textContent = "Đăng nhập thành công! Đang chuyển hướng...";
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

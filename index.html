@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TruyenZone - Trang Chủ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo" onclick="window.location.href='index.html'">
+  <img src="image/logo.jpg" style="height: 100px" alt="logo" />
+  TruyenZone
+</div>
+   <div class="user-actions" id="userActions">
+  <span class="user-name">👋 Xin chào, <strong>anpta</strong></span>
+  <div class="user-buttons">
+    <button onclick="logout()">Đăng xuất</button>
+    <button onclick="location.href='admin_dashboard.html'" class="admin-btn">Quản trị</button>
+  </div>
+</div>
+
+  </header>
+
+ <div class="header">
+  <h2 style="color: white;">🔍 Khám phá truyện hot</h2>
+  <input type="text" id="searchInput" placeholder="Tìm kiếm truyện...">
+</div>
+  <section class="filters">
+  <div class="custom-select">
+    <label for="genreFilter">🎭 Thể loại</label>
+    <select id="genreFilter">
+      <option value="">Tất cả thể loại</option>
+      <option value="Hành động">Hành động</option>
+      <option value="Hài hước">Hài hước</option>
+      <option value="Kinh dị">Kinh dị</option>
+      <option value="Trinh thám">Trinh thám</option>
+    </select>
+  </div>
+
+  <div class="custom-select">
+    <label for="statusFilter">📘 Trạng thái</label>
+    <select id="statusFilter">
+      <option value="">Tất cả trạng thái</option>
+      <option value="Đang cập nhật">Đang cập nhật</option>
+      <option value="Hoàn thành">Hoàn thành</option>
+    </select>
+  </div>
+</section>
+
+  <main id="comicList" class="grid"></main>
+
+  <footer>
+    <p>© 2025 TruyenZone. Thiết kế bởi bạn 😎</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - TruyenZone</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f8f8f8;
+    }
+    .topbar {
+      background: #2c3e50;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .admin-container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.05);
+    }
+    input, select {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 8px 14px;
+      border: none;
+      background: #3498db;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+    tr:hover {
+      background: #f0f0f0;
+    }
+    .form-inline input {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">🔧 Quản trị - TruyenZone</div>
+    <div><button onclick="logoutAdmin()">Đăng xuất</button></div>
+  </header>
+
+  <main class="admin-container">
+    <h2>1. Danh sách truyện</h2>
+
+    <input type="text" id="adminSearch" placeholder="🔍 Tìm truyện...">
+
+    <button onclick="showAddForm()">➕ Thêm truyện</button>
+
+    <div id="addForm" class="form-inline" style="display:none;">
+      <input type="text" id="newTitle" placeholder="Tên truyện">
+      <input type="text" id="newGenre" placeholder="Thể loại">
+      <input type="text" id="newStatus" placeholder="Trạng thái">
+      <input type="text" id="newImage" placeholder="Link ảnh bìa">
+      <input type="text" id="newChapter" placeholder="Chương mới nhất">
+      <button onclick="addComic()">Lưu</button>
+    </div>
+
+    <table style="margin-top: 20px;">
+      <thead>
+        <tr>
+          <th>Ảnh</th>
+          <th>Tên truyện</th>
+          <th>Thể loại</th>
+          <th>Trạng thái</th>
+          <th>Chương mới</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="adminComicList"></tbody>
+    </table>
+
+    <h2 style="margin-top:40px">2. Danh sách người dùng</h2>
+    <ul id="userList"></ul>
+
+    <h2 style="margin-top:40px">3. Bình luận & Đánh giá</h2>
+    <div id="commentSection"></div>
+  </main>
+
+  <script>
+    // Kiểm tra đăng nhập
+    if (!localStorage.getItem("adminLoggedIn")) {
+      window.location.href = "admin_login.html";
+    }
+
+    const comics = JSON.parse(localStorage.getItem("comics") || "[]");
+
+    function renderAdminComics() {
+      const list = document.getElementById("adminComicList");
+      const searchTerm = document.getElementById("adminSearch").value.toLowerCase();
+      list.innerHTML = "";
+
+      comics.forEach((comic, index) => {
+        if (comic.title.toLowerCase().includes(searchTerm)) {
+          list.innerHTML += `
+            <tr>
+              <td><img src="${comic.image}" alt="${comic.title}" width="50"></td>
+              <td>${comic.title}</td>
+              <td>${comic.genre}</td>
+              <td>${comic.status}</td>
+              <td>${comic.chapter}</td>
+              <td><button onclick="deleteComic(${index})">🗑️ Xóa</button></td>
+            </tr>
+          `;
+        }
+      });
+    }
+
+    function showAddForm() {
+      const form = document.getElementById("addForm");
+      form.style.display = form.style.display === "none" ? "block" : "none";
+    }
+
+    function addComic() {
+      const title = document.getElementById("newTitle").value.trim();
+      const genre = document.getElementById("newGenre").value.trim();
+      const status = document.getElementById("newStatus").value.trim();
+      const image = document.getElementById("newImage").value.trim();
+      const chapter = document.getElementById("newChapter").value.trim();
+
+      if (!title || !genre || !status || !image || !chapter) {
+        alert("Vui lòng nhập đầy đủ thông tin!");
+        return;
+      }
+
+      comics.push({ title, genre, status, image, chapter });
+      localStorage.setItem("comics", JSON.stringify(comics));
+
+      renderAdminComics();
+
+      // Xóa input & ẩn form
+      document.getElementById("addForm").querySelectorAll("input").forEach(i => i.value = "");
+      document.getElementById("addForm").style.display = "none";
+
+      alert("Thêm truyện thành công!");
+    }
+
+    function deleteComic(index) {
+      if (confirm("Bạn chắc chắn muốn xóa truyện này?")) {
+        comics.splice(index, 1);
+        localStorage.setItem("comics", JSON.stringify(comics));
+        renderAdminComics();
+      }
+    }
+
+    function logoutAdmin() {
+      localStorage.removeItem("adminLoggedIn");
+      window.location.href = "admin_login.html";
+    }
+
+    function renderUsers() {
+      const userList = document.getElementById("userList");
+      userList.innerHTML = "";
+      Object.keys(localStorage).forEach(key => {
+        if (!["adminLoggedIn", "comics", "selectedComic", "currentUser"].includes(key) && !key.startsWith("comments_")) {
+          userList.innerHTML += `<li>${key}</li>`;
+        }
+      });
+    }
+
+    function renderComments() {
+      const commentSection = document.getElementById("commentSection");
+      let commentsHTML = "";
+
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith("comments_")) {
+          const comments = JSON.parse(localStorage.getItem(key));
+          const comicTitle = key.replace("comments_", "");
+
+          if (comments.length > 0) {
+            commentsHTML += `<h4>${comicTitle}</h4>`;
+            comments.forEach(c => {
+              commentsHTML += `
+                <div style="border:1px solid #ccc;padding:10px;margin-bottom:8px;">
+                  <strong>${c.user}</strong> đánh giá <strong>${c.rating}/5</strong><br/>
+                  <em>${c.text}</em>
+                </div>
+              `;
+            });
+          }
+        }
+      });
+
+      commentSection.innerHTML = commentsHTML || "<p>Chưa có bình luận nào.</p>";
+    }
+
+    document.getElementById("adminSearch").addEventListener("input", renderAdminComics);
+
+    // Khởi động
+    renderAdminComics();
+    renderUsers();
+    renderComments();
+  </script>
+</body>
+</html>

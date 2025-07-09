@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đọc truyện - TruyenZone</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body.dark-mode {
+      background-color: #1e1e1e;
+      color: #eee;
+    }
+
+    body.dark-mode .topbar,
+    body.dark-mode .reader-container,
+    body.dark-mode .chapter-nav,
+    body.dark-mode #commentsBox {
+      background-color: #2a2a2a;
+      color: #fff;
+    }
+
+    body.dark-mode textarea,
+    body.dark-mode select {
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #555;
+    }
+
+    .chapter-images img {
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chapter-nav button {
+      padding: 8px 16px;
+      border: none;
+      background: #3498db;
+      color: white;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .chapter-nav button:hover {
+      background: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo" onclick="window.location.href='index.html'">📚 TruyenZone</div>
+    <div class="user-actions" id="userActions"></div>
+  </header>
+
+  <main class="reader-container">
+    <h2 id="readerTitle"></h2>
+    <div class="chapter-nav">
+      <button onclick="prevChapter()">⬅️ Trước</button>
+      <span id="chapterName"></span>
+      <button onclick="nextChapter()">➡️ Sau</button>
+    </div>
+    <button onclick="toggleDarkMode()" style="margin: 20px;">🌓 Chế độ tối</button>
+    <div id="chapterImages" class="chapter-images"></div>
+  </main>
+
+  <!-- BÌNH LUẬN & ĐÁNH GIÁ -->
+  <section id="commentsBox" style="padding: 20px;">
+    <h3>💬 Bình luận & Đánh giá</h3>
+    <textarea id="commentText" placeholder="Viết bình luận..." rows="3" style="width:100%;padding:10px;border-radius:6px;margin-bottom:10px;"></textarea><br>
+    <label>⭐ Đánh giá: 
+      <select id="rating">
+        <option value="">--Chọn--</option>
+        <option value="5">5 ⭐</option>
+        <option value="4">4 ⭐</option>
+        <option value="3">3 ⭐</option>
+        <option value="2">2 ⭐</option>
+        <option value="1">1 ⭐</option>
+      </select>
+    </label><br><br>
+    <button onclick="submitComment()" style="padding: 8px 16px; border: none; background: #3498db; color: white; border-radius: 5px;">Gửi</button>
+    <hr>
+    <div id="commentList" style="margin-top: 15px;"></div>
+  </section>
+
+  <script src="script.js"></script>
+  <script>
+    const comic = JSON.parse(localStorage.getItem("selectedComic"));
+    let currentChapterIndex = comic.chapters.length - 1;
+
+    function renderChapter() {
+      const chapter = comic.chapters[currentChapterIndex];
+      document.getElementById("readerTitle").textContent = comic.title;
+      document.getElementById("chapterName").textContent = chapter.name;
+
+      const container = document.getElementById("chapterImages");
+      container.innerHTML = "";
+      chapter.images.forEach(img => {
+        const image = document.createElement("img");
+        image.setAttribute("loading", "lazy");
+        image.src = img;
+        image.alt = chapter.name;
+        container.appendChild(image);
+      });
+    }
+
+    function prevChapter() {
+      if (currentChapterIndex > 0) {
+        currentChapterIndex--;
+        renderChapter();
+      }
+    }
+
+    function nextChapter() {
+      if (currentChapterIndex < comic.chapters.length - 1) {
+        currentChapterIndex++;
+        renderChapter();
+      }
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+    }
+
+    if (localStorage.getItem("darkMode") === "true") {
+      document.body.classList.add("dark-mode");
+    }
+
+    function renderComments() {
+      const comments = JSON.parse(localStorage.getItem(`comments_${comic.title}`)) || [];
+      const commentList = document.getElementById("commentList");
+      commentList.innerHTML = "";
+
+      comments.forEach(cmt => {
+        const item = document.createElement("div");
+        item.className = "comment-item";
+        item.innerHTML = `<p><strong>${cmt.user}</strong> (${cmt.rating}⭐): ${cmt.text}</p>`;
+        commentList.appendChild(item);
+      });
+    }
+
+    function submitComment() {
+      const text = document.getElementById("commentText").value.trim();
+      const rating = document.getElementById("rating").value;
+      const currentUser = localStorage.getItem("currentUser");
+
+      if (!currentUser) {
+        alert("Bạn cần đăng nhập để bình luận.");
+        return;
+      }
+
+      if (!text || !rating) {
+        alert("Vui lòng nhập nội dung và đánh giá.");
+        return;
+      }
+
+      const comments = JSON.parse(localStorage.getItem(`comments_${comic.title}`)) || [];
+      comments.push({ user: currentUser, text, rating });
+      localStorage.setItem(`comments_${comic.title}`, JSON.stringify(comments));
+
+      document.getElementById("commentText").value = "";
+      renderComments();
+    }
+
+    updateUserUI();
+    renderChapter();
+    renderComments();
+  </script>
+</body>
+</html>

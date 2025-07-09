@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đăng nhập Quản trị - TruyenZone</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .form-container {
+      width: 320px;
+      margin: 100px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .form-container h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .form-container input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+    .form-container button {
+      width: 100%;
+      padding: 12px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .form-container button:hover {
+      background-color: #2980b9;
+    }
+    .message {
+      margin-top: 12px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Đăng nhập Quản trị</h2>
+    <input type="text" id="adminUsername" placeholder="Tên đăng nhập" />
+    <input type="password" id="adminPassword" placeholder="Mật khẩu" />
+    <button onclick="adminLogin()">Đăng nhập</button>
+    <p id="adminLoginMessage" class="message"></p>
+  </div>
+
+  <script>
+    function adminLogin() {
+      const username = document.getElementById("adminUsername").value.trim();
+      const password = document.getElementById("adminPassword").value.trim();
+      const message = document.getElementById("adminLoginMessage");
+
+      const ADMIN_USER = "admin";
+      const ADMIN_PASS = "admin123";
+
+      if (username === ADMIN_USER && password === ADMIN_PASS) {
+        message.style.color = "green";
+        message.textContent = "Đăng nhập thành công! Đang chuyển hướng...";
+        localStorage.setItem("adminLoggedIn", "true");
+        setTimeout(() => {
+          window.location.href = "admin_dashboard.html";
+        }, 1000);
+      } else {
+        message.style.color = "red";
+        message.textContent = "Sai tài khoản hoặc mật khẩu!";
+      }
+    }
+  </script>
+</body>
+</html>
